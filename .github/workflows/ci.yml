@@ -1,12 +1,16 @@
 name: CI
 
 # Gates for every PR targeting main and every merge group; the ruleset requires only "CI passed".
+# Pushes and manual runs also gate branches without a PR; with no base to diff, every job runs.
 # The @agent specs need a real provider + auth, so they stay out of CI. See .github/SPEC.md → CI.
 on:
   pull_request:
     branches: [main]
   merge_group:
     types: [checks_requested]
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
 
 # Supersede in-flight runs when a PR is updated.
 concurrency:
