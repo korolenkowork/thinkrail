@@ -161,8 +161,9 @@ What ThinkRail does, at product level; the linked spec owns the detail.
   ([[module-thinkrail-workflow]]).
 - **Providers** — in-app sign-in and API keys through pi's auth, JetBrains AI through the user's
   `central` CLI, and the user's own OpenAI-compatible servers (a company gateway or a local model server)
-  added from Settings into pi's `models.json` ([[submodule-server-auth]], [[central-integration]],
-  [[submodule-server-agent]]).
+  added from Settings into pi's `models.json`, and command-line model tools (Gemini CLI or similar) added
+  from Settings into pi's `cli-providers.json` ([[submodule-server-auth]], [[central-integration]],
+  [[submodule-server-agent]], [[module-pi-cli-provider]]).
 - **Pi configuration** — the user's own pi config folder, or another one (a personal vs a work setup), plus
   extra environment variables, chosen in Settings and applied to the whole host at the next start; one setup
   per host, not per project ([[submodule-server-environment]]).

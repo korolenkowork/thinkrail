@@ -41,6 +41,7 @@ const MODULE_RULES: readonly ModuleRule[] = [
 			"packages/pi-thinkrail-workflow",
 			"packages/pi-todos",
 			"packages/extension-api",
+			"pi-extensions/cli-provider",
 		],
 	},
 	{

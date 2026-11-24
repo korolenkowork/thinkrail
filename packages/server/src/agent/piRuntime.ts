@@ -8,6 +8,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { EXTENSION_LOAD_TIMEOUT_MS, withForcedJitiTransform } from "../extensions";
 import { logger } from "../log";
+import { registerCliProviders } from "./cliProvidersFile";
 import { accountAvailableModels, type ModelAvailabilityRuntime } from "./modelAvailability";
 import { advancePiExtensionCache, createPiSettings, piResourcePathKey } from "./packages";
 
@@ -184,6 +185,7 @@ async function createRuntimeWithExtensions(
 		...additionalExtensionPaths,
 		...excludedSessionExtensionPaths,
 	]);
+	registerCliProviders(runtime);
 	return {
 		runtime,
 		providerStatusIds: providerStatus.ids,

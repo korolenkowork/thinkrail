@@ -1,0 +1,54 @@
+{
+	"name": "@thinkrail/pi-cli-provider",
+	"version": "0.0.0",
+	"private": true,
+	"description": "A pi extension that turns any command-line model tool (Gemini CLI or similar) into a pi model provider, configured in cli-providers.json, with pi's own tools called through a prompted tool-call format.",
+	"license": "Apache-2.0",
+	"type": "module",
+	"keywords": [
+		"pi",
+		"pi-coding-agent",
+		"extension",
+		"provider",
+		"cli"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JetBrains/thinkrail.git",
+		"directory": "pi-extensions/cli-provider"
+	},
+	"bugs": "https://github.com/JetBrains/thinkrail/issues",
+	"author": "ThinkRail",
+	"files": [
+		"index.ts",
+		"src/**/*.ts",
+		"!src/**/*.test.ts",
+		"cli-providers.example.json",
+		"README.md",
+		"LICENSE"
+	],
+	"exports": {
+		".": "./index.ts",
+		"./index.ts": "./index.ts",
+		"./package.json": "./package.json"
+	},
+	"pi": {
+		"extensions": [
+			"./index.ts"
+		]
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"test": "bun test"
+	},
+	"peerDependencies": {
+		"@earendil-works/pi-ai": "*",
+		"@earendil-works/pi-coding-agent": "*"
+	},
+	"devDependencies": {
+		"@earendil-works/pi-ai": "catalog:",
+		"@earendil-works/pi-coding-agent": "catalog:",
+		"@types/bun": "catalog:",
+		"typescript": "catalog:"
+	}
+}

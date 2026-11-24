@@ -147,7 +147,8 @@ export type TemplateReadLocation =
 	| { projectId: string; workspaceId?: never }
 	| { workspaceId?: never; projectId?: never };
 
-export const PROTOCOL_VERSION = 132;
+export const PROTOCOL_VERSION = 133;
+export const CLI_PROVIDERS_PROTOCOL_VERSION = 133;
 export const EXTENSION_BROWSE_PROTOCOL_VERSION = 132;
 export const INSTALLED_EXTENSIONS_PROTOCOL_VERSION = 131;
 export const EXTENSION_QUERY_PROTOCOL_VERSION = 130;
@@ -572,6 +573,10 @@ export const WS_METHODS = {
 	customEndpointsProbe: "customEndpoints.probe",
 	customEndpointsSave: "customEndpoints.save",
 	customEndpointsRemove: "customEndpoints.remove",
+	cliProvidersList: "cliProviders.list",
+	cliProvidersSave: "cliProviders.save",
+	cliProvidersRemove: "cliProviders.remove",
+	cliProvidersTest: "cliProviders.test",
 	modelClampThinking: "model.clampThinking",
 	providerStatus: "provider.status",
 	providerDetect: "provider.detect",
@@ -959,6 +964,51 @@ export interface CustomEndpointDraft {
 	apiKey?: string;
 	models: CustomEndpointModel[];
 }
+
+/** Provider ids the command-line tools form gives the providers it adds; ids already in the file are kept. */
+export const CLI_PROVIDER_ID_PREFIX = "cli-";
+
+export type CliProviderMatch = Record<string, string | number | boolean>;
+
+export interface CliProviderModel {
+	id: string;
+	name: string;
+	contextWindow: number | null;
+	maxTokens: number | null;
+}
+
+/** Where a `jsonl` command's events carry the reply text, the token counts and a failure. */
+export interface CliProviderJsonl {
+	text: { match: CliProviderMatch; path: string };
+	usage: { match: CliProviderMatch; input: string; output: string; total: string } | null;
+	error: { match: CliProviderMatch; path: string } | null;
+}
+
+/** A command-line model tool in pi's `cli-providers.json`, run once per turn. */
+export interface CliProvider {
+	id: string;
+	name: string;
+	command: string;
+	args: string[];
+	prompt: "stdin" | "arg";
+	output: "text" | "jsonl";
+	jsonl: CliProviderJsonl | null;
+	tools: "prompted" | "none";
+	env: Record<string, string>;
+	models: CliProviderModel[];
+}
+
+export interface CliProviderDraft extends Omit<CliProvider, "id"> {
+	/** Present to replace an existing provider; absent to add a new one. */
+	id?: string;
+}
+
+export interface CliProviderTestRequest {
+	draft: CliProviderDraft;
+	modelId: string;
+}
+
+export type CliProviderTest = { ok: true; reply: string } | { ok: false; error: string };
 
 export function modelContextWindowLimits(provider: string): ModelContextWindowLimits {
 	return isCustomEndpointId(provider)
@@ -1458,6 +1508,10 @@ export interface WsMethodMap {
 	"customEndpoints.probe": { params: CustomEndpointProbeRequest; result: CustomEndpointProbe };
 	"customEndpoints.save": { params: CustomEndpointDraft; result: CustomEndpoint[] };
 	"customEndpoints.remove": { params: { id: string }; result: CustomEndpoint[] };
+	"cliProviders.list": { params: Record<string, never>; result: CliProvider[] };
+	"cliProviders.save": { params: CliProviderDraft; result: CliProvider[] };
+	"cliProviders.remove": { params: { id: string }; result: CliProvider[] };
+	"cliProviders.test": { params: CliProviderTestRequest; result: CliProviderTest };
 	"provider.status": { params: Record<string, never>; result: ProviderStatusReport };
 	"provider.detect": { params: Record<string, never>; result: { accounts: DetectedAccount[] } };
 	"provider.loginStart": {

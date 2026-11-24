@@ -45,6 +45,7 @@ import {
 	isMcpLoginId,
 	isPiSessionId,
 	listAvailableModels,
+	listCliProviders,
 	listCustomEndpoints,
 	listModelContextSettings,
 	listProjectAliasSkillNames,
@@ -67,6 +68,7 @@ import {
 	refreshSubagentConcurrency,
 	refreshSubagentTools,
 	reloadSessionResources,
+	removeCliProvider,
 	removeCustomEndpoint,
 	removeQueuedSession,
 	removeSession,
@@ -75,6 +77,7 @@ import {
 	replyMcpProbe,
 	resolveExtUi,
 	respondToTool,
+	saveCliProvider,
 	saveCustomEndpoint,
 	sendReviewFixToSession,
 	setModelContextWindow,
@@ -84,6 +87,7 @@ import {
 	stopAllSubagents,
 	stopBackgroundCommand,
 	stopSubagent,
+	testCliProvider,
 	writeCacheWarmingMode,
 } from "../agent";
 import {
@@ -1567,6 +1571,10 @@ const handlers: WsHandlers = {
 	"customEndpoints.probe": (p) => probeCustomEndpoint(p),
 	"customEndpoints.save": (p) => saveCustomEndpoint(p),
 	"customEndpoints.remove": (p) => removeCustomEndpoint(p.id),
+	"cliProviders.list": () => listCliProviders(),
+	"cliProviders.save": (p) => saveCliProvider(p),
+	"cliProviders.remove": (p) => removeCliProvider(p.id),
+	"cliProviders.test": (p) => testCliProvider(p),
 	"model.default": () =>
 		observeSetupRead(
 			() => resolveNewChatModel({}),

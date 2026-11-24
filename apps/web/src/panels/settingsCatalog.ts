@@ -1,6 +1,7 @@
 import {
 	AGENT_REVIEW_SETTING_PROTOCOL_VERSION,
 	CACHE_WARMING_SETTINGS_PROTOCOL_VERSION,
+	CLI_PROVIDERS_PROTOCOL_VERSION,
 	CONTEXT_WINDOW_SETTINGS_PROTOCOL_VERSION,
 	CUSTOM_ENDPOINTS_PROTOCOL_VERSION,
 	EXTENSION_BROWSE_PROTOCOL_VERSION,
@@ -160,6 +161,14 @@ export const SETTING = {
 		description: "settings.customEndpoints.description",
 		keywords: ["model endpoint", "openai compatible", "ollama", "vllm"],
 		requiresProtocolVersion: CUSTOM_ENDPOINTS_PROTOCOL_VERSION,
+	},
+	cliTools: {
+		id: "cli-tools",
+		section: SettingsSection.Providers,
+		label: "settings.cliProviders.title",
+		description: "settings.cliProviders.description",
+		keywords: ["command line", "cli", "gemini cli", "terminal tool"],
+		requiresProtocolVersion: CLI_PROVIDERS_PROTOCOL_VERSION,
 	},
 	apiKeyProviders: {
 		id: "api-key-providers",

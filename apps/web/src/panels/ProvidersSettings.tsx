@@ -22,6 +22,7 @@ import {
 	useSettingsListRow,
 } from "@/settingsKit";
 import { useAppStore } from "@/store";
+import { CliProvidersSettings, useCliProviders } from "./CliProvidersSettings";
 import { CustomEndpointsSettings, useCustomEndpoints } from "./CustomEndpointsSettings";
 import { JetBrainsAiSettings, type JetBrainsQuotaSettings } from "./JetBrainsAiCard";
 import { ProviderRow } from "./ProviderRow";
@@ -67,6 +68,7 @@ export function ProvidersSettings() {
 		"settings.providers.quotaSaveFailed",
 	);
 	const customEndpoints = useCustomEndpoints();
+	const cliProviders = useCliProviders();
 
 	const quota: JetBrainsQuotaSettings | null =
 		protocolVersion !== null && protocolVersion >= JBCENTRAL_QUOTA_PROTOCOL_VERSION
@@ -98,6 +100,7 @@ export function ProvidersSettings() {
 	const refresh = () => {
 		void load();
 		void customEndpoints?.load();
+		void cliProviders?.load();
 	};
 
 	const showAllProviders = () => {
@@ -210,6 +213,8 @@ export function ProvidersSettings() {
 			) : null}
 
 			{report && customEndpoints ? <CustomEndpointsSettings state={customEndpoints} /> : null}
+
+			{report && cliProviders ? <CliProvidersSettings state={cliProviders} /> : null}
 
 			{report && apiKeyRows.length > 0 ? (
 				<SettingsGroup

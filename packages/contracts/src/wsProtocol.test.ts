@@ -25,6 +25,7 @@ import {
 	CHAT_ATTACHMENTS_PROTOCOL_VERSION,
 	CHAT_RESOURCES_PROTOCOL_VERSION,
 	CHATS_PROTOCOL_VERSION,
+	CLI_PROVIDERS_PROTOCOL_VERSION,
 	CLIENT_ERROR_REPORT_PROTOCOL_VERSION,
 	CONTEXT_WINDOW_SETTINGS_PROTOCOL_VERSION,
 	CONTINUATION_PROTOCOL_VERSION,
@@ -390,7 +391,7 @@ test("host search and its previews are pinned to v106", () => {
 });
 
 test("the community catalog is pinned to v132", () => {
-	expect(PROTOCOL_VERSION).toBe(132);
+	expect(PROTOCOL_VERSION).toBeGreaterThanOrEqual(EXTENSION_BROWSE_PROTOCOL_VERSION);
 	expect(EXTENSION_BROWSE_PROTOCOL_VERSION).toBe(132);
 	expect(WS_METHODS.extensionsBrowse).toBe("extensions.browse");
 });
@@ -779,6 +780,13 @@ test("provider warnings are pinned to v99", () => {
 	expect(PROVIDER_WARNINGS_PROTOCOL_VERSION).toBe(99);
 	expect(PROTOCOL_VERSION).toBeGreaterThanOrEqual(PROVIDER_WARNINGS_PROTOCOL_VERSION);
 	expect(WS_METHODS.providerDisableWarning).toBe("provider.disableWarning");
+});
+
+test("cli providers are pinned to v133", () => {
+	expect(PROTOCOL_VERSION).toBe(133);
+	expect(CLI_PROVIDERS_PROTOCOL_VERSION).toBe(133);
+	expect(PROTOCOL_VERSION).toBeGreaterThanOrEqual(CLI_PROVIDERS_PROTOCOL_VERSION);
+	expect(WS_METHODS.cliProvidersTest).toBe("cliProviders.test");
 });
 
 test("custom endpoints are pinned to v101 and own only custom-* providers", () => {

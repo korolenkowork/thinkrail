@@ -258,6 +258,18 @@ re-opened transcripts provider-valid.
     the user picked meanwhile. The rebind restores the chat's thinking level afterwards, because
     `setModel` re-applies the saved default even for the same model. There is no undo affordance;
     reverting is a manual `models.json` edit.
+  - `cliProviders` — the settings adapter for command-line model tools (Gemini CLI or one shaped like it),
+    stored in pi's `cli-providers.json` beside `models.json` and run by [[module-pi-cli-provider]]. The host
+    composes that package directly — no ThinkRail extension owns a provider, and the extension system has
+    no provider seam — so a saved tool appears in the picker without a restart: every runtime generation
+    registers the file's entries right after the user-extension providers (`cliProvidersFile`, outside the
+    session-manager import graph), and a save or remove unregisters what that runtime last registered,
+    re-registers the file, refreshes offline and publishes `provider.changed` through
+    `setModelsFilePublisher`. The file is a plain JSON list the vanilla extension reads too; entries keep
+    fields the form does not manage, new ids take `CLI_PROVIDER_ID_PREFIX` plus a numeric suffix on a
+    clash, and an entry that fails registration is skipped with a count-only warn. `cliProviders.test`
+    runs the draft once with tools off and a fixed one-word prompt (60s cap) and returns the reply or the
+    command's own failure; it is user-initiated and may spend the tool's tokens.
   - `customEndpoints` — the settings adapter for the user's own OpenAI-compatible servers (a company
     gateway or a local llama.cpp / vLLM / sglang / Ollama / LM Studio server), again a `models.json` editor
     and not a registry: each is a `custom-*` provider with `api: "openai-completions"`, served by pi like any
@@ -1418,7 +1430,8 @@ re-opened transcripts provider-valid.
   pre-bootstrap `configurePiRuntimeGenerationInitializer` composition seam; `listModelContextSettings` /
   `setModelContextWindow` (the `modelContext` adapter); `disableSessionServerFallback` (the `serverFallback` repair); `readCacheWarmingSetting` / `writeCacheWarmingMode`
   (the `cacheWarming` adapter); `listCustomEndpoints` / `probeCustomEndpoint` /
-  `saveCustomEndpoint` / `removeCustomEndpoint` (the `customEndpoints` adapter); `setModelsFilePublisher`
+  `saveCustomEndpoint` / `removeCustomEndpoint` (the `customEndpoints` adapter); `listCliProviders` /
+  `saveCliProvider` / `removeCliProvider` / `testCliProvider` (the `cliProviders` adapter); `setModelsFilePublisher`
   (their shared `provider.changed` seam); `piLoginOptions` (pi login options
   carrying the lazily created installation device id, for `auth`);
   `completeOnce`/`pickModel` +

@@ -52,7 +52,8 @@ e2e).
 - **Allowed deps:** `contracts` (types + WS constants), `shared` (`shellEnv` and the Central adapter), `bun-pty`,
   `@earendil-works/pi-coding-agent` + `@earendil-works/pi-ai` (runtime), `extension-api` (`./server` types; `./installed`, the manifest reader, from `extensions/installed` only)
   + every `thinkrail-extensions/*` **server subpath only** (the registry's composition edge; the host no
-  longer depends directly on a pi package an extension owns), `pino` + its pretty/rolling
+  longer depends directly on a pi package an extension owns), `@thinkrail/pi-cli-provider` (CLI providers,
+  composed by `agent` because providers have no extension seam), `pino` + its pretty/rolling
   destinations (host diagnostics), `jsonc-parser` (targeted shared Pi configuration edits), Bun/Node.
 - **Deployment obligation:** product behavior lives in the owning server feature module and is composed by
   `host`; launchers only supply boot options and packaged resources. When a demonstrated second environment

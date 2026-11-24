@@ -28,6 +28,7 @@
 		"@thinkrail/ext-web-access": "workspace:*",
 		"@thinkrail/extension-api": "workspace:*",
 		"@thinkrail/locales": "workspace:*",
+		"@thinkrail/pi-cli-provider": "workspace:*",
 		"@thinkrail/shared": "workspace:*",
 		"bun-pty": "0.5.2",
 		"jsonc-parser": "3.3.1",

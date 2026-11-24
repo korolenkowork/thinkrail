@@ -1080,7 +1080,14 @@ a project picker, the prompt hero, and the reused
   Re-detecting drops a saved max output only when a context was saved and the server now reports a
   different one: that value may be derived from the old context, and the draft can't tell a derived
   value from a hand-set one. The pure draft rules live in `customEndpointDraft`; probe failures render
-  as localized inline status and host save errors render inline; and
+  as localized inline status and host save errors render inline; **`CliProvidersSettings`** (from
+  `CLI_PROVIDERS_PROTOCOL_VERSION`, after Custom servers) — the user's command-line model tools over
+  `cliProviders.*`: a list with edit/remove (confirmed) and one dialog holding name, command (full-path
+  hint), arguments one per line, prompt on stdin or as `{prompt}`, plain-text or JSON-lines output with
+  `key=value` match + dotted-path selectors for reply text, token counts and failure, pi's tools offered or
+  not, `KEY=value` environment lines, and editable model rows; a Gemini CLI preset fills the reference
+  setup. Save and Test stay disabled until the draft is runnable; Test runs it once host-side and shows the
+  reply or the command's failure inline. The pure draft rules live in `cliProviderDraft`; and
   the **`JetBrainsAiCard`** — route Central-supported models through the user's JetBrains subscription while
   keeping ThinkRail's embedded PI — a state machine over the typed `JbcentralStatus` +
   `provider.jbcentral*`: absent (official host-OS install guidance + Recheck), outdated — below the host's

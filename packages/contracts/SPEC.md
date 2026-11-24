@@ -916,6 +916,13 @@ usually wants the path. The desktop's clipboard read and the web's decision to c
   names it, `default` when the host's own default, **`DEFAULT_CACHE_WARMING_MODE`** (`streaming`), applies. The mutation takes `{mode}`; a write pi's
   settings loader would silently skip fails with **`CACHE_WARMING_WRITE_FAILED`**. The value lives only in
   pi's file; no AppConfig field mirrors it) /
+  **`cliProviders.list`** / **`cliProviders.save`** / **`cliProviders.remove`** / **`cliProviders.test`**
+  (v133, `CLI_PROVIDERS_PROTOCOL_VERSION`; command-line model tools in pi's `cli-providers.json`. A
+  `CliProvider` is every field the form manages, defaults filled — `prompt` `stdin`, `output` `text`,
+  `tools` `prompted`, `jsonl` `null` unless reading JSON lines, whose `usage` / `error` selectors are
+  `null` when unset; model limits are `null` when unset. A `CliProviderDraft` omits `id` to add one, which
+  then gets **`CLI_PROVIDER_ID_PREFIX`** (`cli-`). `test` takes `{draft, modelId}` and returns
+  `{ok: true, reply}` or `{ok: false, error}` rather than throwing for a failing command) /
   **`customEndpoints.list`** / **`customEndpoints.probe`** / **`customEndpoints.save`** /
   **`customEndpoints.remove`** (v101, `CUSTOM_ENDPOINTS_PROTOCOL_VERSION`; the user's OpenAI-compatible
   servers stored as pi `models.json` providers whose ids carry **`CUSTOM_ENDPOINT_ID_PREFIX`** (`custom-`,

@@ -11,6 +11,12 @@ export {
 	stopSubagent,
 } from "./chatResources";
 export {
+	listCliProviders,
+	removeCliProvider,
+	saveCliProvider,
+	testCliProvider,
+} from "./cliProviders";
+export {
 	CONTINUE_IN_WORKSPACE_TOOL_NAME,
 	type ContinueToolHost,
 	clampHandoffSummary,
