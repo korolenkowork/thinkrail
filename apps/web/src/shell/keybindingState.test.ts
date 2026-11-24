@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { KEYBINDINGS_PROTOCOL_VERSION } from "@thinkrail/contracts";
 import { currentTranslator } from "@thinkrail/locales/react";
 import { REVIEW_SURFACE_COMMANDS } from "@thinkrail/resource-renderers";
+import { browserPlatform } from "@thinkrail/ui/keyboard";
 import {
 	keybindingLabel,
 	keybindingList,
@@ -14,18 +15,25 @@ import { commandTitle, LOCAL_SETS, selectKeybindings, selectLocalKeymap } from "
 const overrides = { "search.open": ["Mod+Alt+KeyS"] };
 
 test("an older host's stored overrides are ignored: the client runs the defaults", () => {
+	const platform = browserPlatform();
+	const defaultLabel = keybindingLabel(resolveKeybindings({ platform }), "search.open");
+	const overriddenLabel = keybindingLabel(
+		resolveKeybindings({ platform, overrides }),
+		"search.open",
+	);
+	expect(overriddenLabel).not.toBe(defaultLabel);
 	const older = selectKeybindings({
 		protocolVersion: KEYBINDINGS_PROTOCOL_VERSION - 1,
 		keybindingOverrides: overrides,
 		disabledExtensions: [],
 	});
-	expect(keybindingLabel(older, "search.open")).toBe("Ctrl+K");
+	expect(keybindingLabel(older, "search.open")).toBe(defaultLabel);
 	const current = selectKeybindings({
 		protocolVersion: KEYBINDINGS_PROTOCOL_VERSION,
 		keybindingOverrides: overrides,
 		disabledExtensions: [],
 	});
-	expect(keybindingLabel(current, "search.open")).toBe("Ctrl+Alt+S");
+	expect(keybindingLabel(current, "search.open")).toBe(overriddenLabel);
 });
 
 test("a winner the browser's list lacks, a desktop row, is still named by its catalog title", () => {
