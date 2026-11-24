@@ -234,7 +234,9 @@ never in `JetBrains/thinkrail`. It versions `${BASE_VERSION}-nightly.<1000 + run
 tags clear of upstream's), runs `.github/actions/build-binary` on the `nightly` channel without an analytics
 key for `bun-darwin-arm64`, `bun-linux-x64` and `bun-windows-x64`, then creates prerelease `v<version>`
 with the CLI binaries, desktop installers and `SHA256SUMS`, and replaces the manifests and archives on the
-`desktop-updates` release. The CLI updater (`RELEASE_REPO`), both installers (`THINKRAIL_REPO` default,
+`desktop-updates` release. Publish runs with whatever platforms built (macOS arm64 hosted
+runners can go unacquired under capacity limits) and names any missing asset in the release notes;
+re-running the failed jobs rebuilds it and republishes the full set. The CLI updater (`RELEASE_REPO`), both installers (`THINKRAIL_REPO` default,
 `nightly` default channel) and Electrobun's `release.baseUrl` all point at `korolenkowork/thinkrail`, so
 installs from the fork update only from it. The upstream-only website deploy and pi-package publish jobs are
 guarded to `JetBrains/thinkrail`. Raise `BASE_VERSION` when merging a newer upstream base.

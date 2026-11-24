@@ -89,6 +89,9 @@ jobs:
   publish:
     name: Publish
     needs: [version, build]
+    # Publish whatever platforms built: a hosted runner that never arrives (macOS arm64 capacity) must
+    # not hold back the others. Re-running the failed jobs rebuilds it and republishes the full set.
+    if: ${{ always() && needs.version.result == 'success' }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -111,10 +114,21 @@ jobs:
         run: |
           set -eu
           tag="v$VERSION"
+          if [ -z "$(ls -A release 2> /dev/null)" ]; then
+            echo "::error::no platform built, so there is nothing to publish"
+            exit 1
+          fi
+          notes="Nightly build of $SHA from main."
+          for asset in thinkrail-darwin-arm64 thinkrail-linux-x64 thinkrail-windows-x64.exe; do
+            if [ ! -f "release/$asset" ]; then
+              echo "::warning::$asset did not build; re-run the failed jobs to add it"
+              notes="$notes Missing: $asset (re-run the failed jobs to add it)."
+            fi
+          done
           (cd release && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
           gh release delete "$tag" -R "$REPO" --cleanup-tag --yes 2> /dev/null || true
           gh release create "$tag" release/* -R "$REPO" --target "$SHA" --prerelease \
-            --title "ThinkRail $VERSION" --notes "Nightly build of $SHA from main."
+            --title "ThinkRail $VERSION" --notes "$notes"
           if ! gh release view desktop-updates -R "$REPO" > /dev/null 2>&1; then
             gh release create desktop-updates -R "$REPO" --target "$SHA" --prerelease --latest=false \
               --title "Desktop update feed" --notes "Electrobun update manifests and archives for this fork's desktop app."
