@@ -291,6 +291,75 @@ jobs:
           path: playwright-report-desktop/
           retention-days: 7
 
+  package:
+    name: Package (${{ matrix.label }})
+    timeout-minutes: 40
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-15, label: macos-arm64 }
+          - { os: ubuntu-24.04, label: linux-x64 }
+          - { os: windows-latest, label: windows-x64 }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+          no-cache: ${{ runner.os == 'Windows' }}
+      - run: bun install --frozen-lockfile
+      - name: Install desktop runtime packages
+        if: ${{ runner.os == 'Linux' }}
+        uses: ./.github/actions/apt-packages
+        timeout-minutes: 10
+        with:
+          set: desktop
+      - run: bun run build:binary
+      - name: Download the Electrobun toolchain
+        run: bash .github/scripts/prepare-electrobun.sh
+      - run: bun run desktop:build
+      - name: Archive the binary and the desktop app
+        env:
+          LABEL: ${{ matrix.label }}
+        run: |
+          set -eu
+          out=packages-out
+          mkdir -p "$out"
+          build=$(ls -d apps/desktop/build/*/ | head -n 1)
+          case "$RUNNER_OS" in
+            macOS)
+              tar -czf "$out/thinkrail-$LABEL.tar.gz" -C apps/cli/dist thinkrail
+              ditto -c -k --keepParent "$(ls -d "$build"*.app | head -n 1)" "$out/ThinkRail-dev-$LABEL.zip"
+              ;;
+            Linux)
+              tar -czf "$out/thinkrail-$LABEL.tar.gz" -C apps/cli/dist thinkrail
+              tar -czf "$out/ThinkRail-dev-$LABEL.tar.gz" -C "$build" .
+              ;;
+            Windows)
+              cp apps/cli/dist/thinkrail.exe "$out/thinkrail-$LABEL.exe"
+              7z a -tzip "$out/ThinkRail-dev-$LABEL.zip" "./$build*" > /dev/null
+              ;;
+          esac
+          ls -la "$out"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: thinkrail-${{ matrix.label }}
+          path: packages-out/
+          retention-days: 14
+      - run: bun run smoke:binary
+      - name: Smoke the desktop app
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            env LIBGL_ALWAYS_SOFTWARE=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 xvfb-run -a bun run smoke:desktop
+          else
+            bun run smoke:desktop
+          fi
+
   # The one required check in the main ruleset.
   ci-passed:
     name: CI passed

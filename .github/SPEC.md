@@ -31,6 +31,12 @@ pipeline.
 Workflow Bun setup reads the root `package.json` `packageManager` pin through `bun-version-file`.
 Desktop's packaged runtime remains Electrobun-owned (see [[module-desktop]]).
 
+Pushes to a branch other than `main` and manual dispatches run the same jobs (with no PR base the change
+classifier runs every job) plus **`package`**: a macOS arm64 / Linux x64 / Windows x64 matrix that builds
+the dev CLI binary and the dev desktop app through the normal package commands, uploads them as a
+14-day `thinkrail-<os>-<arch>` workflow artifact, then smokes both. These are unsigned `0.0.0-dev` builds
+for trying a branch, never release assets, and the job is outside `ci-passed`.
+
 PR and merge-queue gates cover dependency/boundary/seam/spec-surface conformance, lint/typecheck, unit and
 no-agent browser tests. Linux and Windows run native CLI artifact smoke; Linux also runs browser tests
 against the compiled binary. Desktop coverage builds the Linux target, runs native-window and shared
