@@ -1,0 +1,122 @@
+name: Fork release
+
+# Publishes a nightly build of this fork on every push to main: the CLI binaries, the desktop
+# installers and the desktop update feed, so installs from this fork update only from it.
+# Upstream JetBrains releases come from a private pipeline, so this never runs there.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fork-release
+  cancel-in-progress: false
+
+env:
+  # Raise when merging a newer upstream base; the run-number offset keeps tags clear of upstream's.
+  BASE_VERSION: "0.5.0"
+
+jobs:
+  version:
+    name: Version
+    if: ${{ github.repository != 'JetBrains/thinkrail' }}
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - id: version
+        run: echo "version=${BASE_VERSION}-nightly.$((1000 + GITHUB_RUN_NUMBER))" | tee -a "$GITHUB_OUTPUT"
+
+  build:
+    name: Build (${{ matrix.target }})
+    needs: version
+    timeout-minutes: 60
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-15, target: bun-darwin-arm64 }
+          - { os: ubuntu-24.04, target: bun-linux-x64 }
+          - { os: windows-2022, target: bun-windows-x64 }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+          no-cache: ${{ runner.os == 'Windows' }}
+      - run: bun install --frozen-lockfile
+      - name: Install desktop runtime packages
+        if: ${{ runner.os == 'Linux' }}
+        uses: ./.github/actions/apt-packages
+        timeout-minutes: 10
+        with:
+          set: desktop
+      - id: build
+        uses: ./.github/actions/build-binary
+        with:
+          version: ${{ needs.version.outputs.version }}
+          channel: nightly
+          target: ${{ matrix.target }}
+      - name: Collect release files
+        shell: bash
+        env:
+          CLI: ${{ steps.build.outputs.artifact-path }}
+          DESKTOP: ${{ steps.build.outputs.desktop-artifact-path }}
+          MANIFEST: ${{ steps.build.outputs.desktop-update-manifest-path }}
+          ARCHIVE: ${{ steps.build.outputs.desktop-update-archive-path }}
+        run: |
+          set -eu
+          mkdir -p release-out updates-out
+          cp "$CLI" "$DESKTOP" release-out/
+          cp "$MANIFEST" "$ARCHIVE" updates-out/
+          ls -la release-out updates-out
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.target }}
+          path: release-out/
+          retention-days: 3
+      - uses: actions/upload-artifact@v7
+        with:
+          name: updates-${{ matrix.target }}
+          path: updates-out/
+          retention-days: 3
+
+  publish:
+    name: Publish
+    needs: [version, build]
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: updates-*
+          path: updates
+          merge-multiple: true
+      - name: Publish the release and refresh the desktop update feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          set -eu
+          tag="v$VERSION"
+          (cd release && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
+          gh release delete "$tag" -R "$REPO" --cleanup-tag --yes 2> /dev/null || true
+          gh release create "$tag" release/* -R "$REPO" --target "$SHA" --prerelease \
+            --title "ThinkRail $VERSION" --notes "Nightly build of $SHA from main."
+          if ! gh release view desktop-updates -R "$REPO" > /dev/null 2>&1; then
+            gh release create desktop-updates -R "$REPO" --target "$SHA" --prerelease --latest=false \
+              --title "Desktop update feed" --notes "Electrobun update manifests and archives for this fork's desktop app."
+          fi
+          gh release upload desktop-updates updates/* -R "$REPO" --clobber

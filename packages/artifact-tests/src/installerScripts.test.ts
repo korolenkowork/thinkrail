@@ -147,6 +147,7 @@ function runInstaller(
 			"installer-test",
 			fakeBin,
 			shellPath(shellInstaller),
+			...(args.some((arg) => arg.startsWith("--channel")) ? [] : ["--channel", "stable"]),
 			...args,
 		],
 		{

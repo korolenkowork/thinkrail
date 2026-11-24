@@ -31,7 +31,7 @@ We built a rich interface around the `pi` coding agent, isolated work into separ
 
 ThinkRail ships in two forms: a native desktop installer and the self-contained `thinkrail` CLI. You can install them from out [Landing page](https://thinkrail.ai/#install).
 
-For latest version, see the [Releases page](https://github.com/JetBrains/thinkrail/releases).
+For latest version, see the [Releases page](https://github.com/korolenkowork/thinkrail/releases).
 
 
 ## What you get
@@ -104,7 +104,7 @@ Download the `thinkrail-desktop-*` asset for your platform:
   sudo apt install libgtk-3-0 libwebkit2gtk-4.1-0 libayatana-appindicator3-1 librsvg2-2 libnotify-bin
   ```
 
-There are two update channels: stable and nightly. If the ThinkRail desktop app, you can check them in **Settings → Updates**: **Download** → **Preparing update** → **Install & Restart**.
+This fork publishes only nightly builds, one per push to `main`, and its installs update only from this fork's releases; the installers default to the nightly channel. If the ThinkRail desktop app, you can check them in **Settings → Updates**: **Download** → **Preparing update** → **Install & Restart**.
 ### Command line
 
 The installer downloads the right binary, verifies its SHA-256 checksum, and puts `thinkrail` on your PATH.
@@ -112,13 +112,13 @@ The installer downloads the right binary, verifies its SHA-256 checksum, and put
 **macOS / Linux** (also Windows under Git Bash):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.sh | bash
 ```
 
 **Windows**: the same command works from cmd and PowerShell:
 
 ```powershell
-powershell -c "irm https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.ps1 | iex"
+powershell -c "irm https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.ps1 | iex"
 ```
 
 Then run `thinkrail`, optionally with a git repo to open as a project:
@@ -138,16 +138,16 @@ The installer takes `--channel stable|nightly` and `--version`; a pinned version
 selected channel:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh | bash -s -- --channel nightly
-curl -fsSL https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh | bash -s -- --channel stable --version 0.3.1
-curl -fsSL https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh | bash -s -- --channel nightly --version 0.4.0-nightly.2
+curl -fsSL https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.sh | bash -s -- --channel nightly
+curl -fsSL https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.sh | bash -s -- --channel stable --version 0.3.1
+curl -fsSL https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.sh | bash -s -- --channel nightly --version 0.4.0-nightly.2
 ```
 
 On Windows the options are environment variables (`THINKRAIL_CHANNEL`, `THINKRAIL_VERSION`, `THINKRAIL_PREFIX`, `THINKRAIL_NO_MODIFY_PATH`):
 
 ```powershell
-$env:THINKRAIL_CHANNEL='nightly'; irm https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.ps1 | iex   # PowerShell
-set "THINKRAIL_CHANNEL=stable" && set "THINKRAIL_VERSION=0.3.1" && powershell -c "irm https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.ps1 | iex"   # cmd
+$env:THINKRAIL_CHANNEL='nightly'; irm https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.ps1 | iex   # PowerShell
+set "THINKRAIL_CHANNEL=stable" && set "THINKRAIL_VERSION=0.3.1" && powershell -c "irm https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.ps1 | iex"   # cmd
 ```
 
 If you keep ThinkRail running, it periodically checks for updates and, when it finds one, shows an "Update available" button in the GUI.

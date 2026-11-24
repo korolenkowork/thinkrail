@@ -17,7 +17,7 @@ export default {
 		exitOnLastWindowClosed: true,
 	},
 	release: {
-		baseUrl: "https://github.com/JetBrains/thinkrail/releases/download/desktop-updates",
+		baseUrl: "https://github.com/korolenkowork/thinkrail/releases/download/desktop-updates",
 		generatePatch: false,
 	},
 	build: {

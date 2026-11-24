@@ -9,9 +9,10 @@ import {
 } from "./paths";
 import { psQuote, runPowerShellScript } from "./powershell";
 
-const DEFAULT_INSTALL_SCRIPT_URL =
-	"https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh";
-const GITHUB_RELEASES_URL = "https://api.github.com/repos/JetBrains/thinkrail/releases";
+export const RELEASE_REPO = "korolenkowork/thinkrail";
+const DEFAULT_INSTALL_SCRIPT_URL = `https://raw.githubusercontent.com/${RELEASE_REPO}/main/install.sh`;
+const GITHUB_RELEASES_URL = `https://api.github.com/repos/${RELEASE_REPO}/releases`;
+const RELEASES_PAGE_URL = `https://github.com/${RELEASE_REPO}/releases`;
 const RELEASE_CHECK_TIMEOUT_MS = 5_000;
 const RELEASE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const RELEASE_CHECK_ERROR = "Unable to check for ThinkRail updates.";
@@ -38,8 +39,7 @@ function hasForbiddenUnixInstallPrefixCharacter(value: string): boolean {
 	return false;
 }
 
-export const MANUAL_LAYOUT_UPDATE_ERROR =
-	"This ThinkRail executable is outside the supported <prefix>/bin layout and cannot self-update safely. Reinstall it with the published installer, or replace it manually from https://github.com/JetBrains/thinkrail/releases";
+export const MANUAL_LAYOUT_UPDATE_ERROR = `This ThinkRail executable is outside the supported <prefix>/bin layout and cannot self-update safely. Reinstall it with the published installer, or replace it manually from ${RELEASES_PAGE_URL}`;
 
 export type ReleaseChannel = "stable" | "nightly";
 
@@ -297,8 +297,7 @@ export function resolveUpdatePlan(input: ResolveUpdateInput): UpdatePlan {
 	return { channel, prefix, bashArgs };
 }
 
-const DEFAULT_INSTALL_PS1_URL =
-	"https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.ps1";
+const DEFAULT_INSTALL_PS1_URL = `https://raw.githubusercontent.com/${RELEASE_REPO}/main/install.ps1`;
 
 export function resolveWindowsInstallPrefix(metaPrefix: unknown, home: string): string {
 	const rawPrefix =
@@ -375,7 +374,7 @@ export function windowsManualUpdateMessage(
 		`Re-run the installer by hand to get ${what}. Pick the line for your shell:`,
 		`  PowerShell:  ${psPrefix}irm ${DEFAULT_INSTALL_PS1_URL} | iex`,
 		`  cmd:         ${cmdPrefix}powershell -c "irm ${DEFAULT_INSTALL_PS1_URL} | iex"`,
-		"Or download manually: https://github.com/JetBrains/thinkrail/releases",
+		`Or download manually: ${RELEASES_PAGE_URL}`,
 	].join("\n");
 }
 

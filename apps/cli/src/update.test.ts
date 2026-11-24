@@ -47,7 +47,9 @@ describe("discoverReleaseVersion", () => {
 			return githubJson({ tag_name: "v1.2.3" });
 		});
 
-		expect(requestedUrl).toBe("https://api.github.com/repos/JetBrains/thinkrail/releases/latest");
+		expect(requestedUrl).toBe(
+			"https://api.github.com/repos/korolenkowork/thinkrail/releases/latest",
+		);
 		expect(requestSignal).toBeInstanceOf(AbortSignal);
 		expect(candidate).toBe("1.2.3");
 	});
@@ -65,7 +67,7 @@ describe("discoverReleaseVersion", () => {
 		});
 
 		expect(requestedUrl).toBe(
-			"https://api.github.com/repos/JetBrains/thinkrail/releases?per_page=20",
+			"https://api.github.com/repos/korolenkowork/thinkrail/releases?per_page=20",
 		);
 		expect(candidate).toBe("1.4.0-nightly.17");
 	});
@@ -644,7 +646,7 @@ describe("windowsManualUpdateMessage", () => {
 	test("stable/latest is one bare command per shell", () => {
 		const msg = windowsManualUpdateMessage("stable", "latest");
 		expect(psLine(msg)).toContain(
-			"irm https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.ps1 | iex",
+			"irm https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.ps1 | iex",
 		);
 		expect(cmdLine(msg)).toContain('powershell -c "irm ');
 		expect(msg).not.toContain("THINKRAIL_CHANNEL");

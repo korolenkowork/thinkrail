@@ -57,7 +57,8 @@ deliberately **not** parsed here — the host's analytics module is its single r
 A compiled `stable`/`nightly` binary in the supported `<prefix>/bin/thinkrail[.exe]` layout supplies `bootHost`
 with one optional periodic update-notice producer; source and `dev` identities and manually placed binaries do
 not expose the capability. After the host is ready it performs a bounded lookup
-immediately and every six hours on the baked channel with the same GitHub rules as the installers: stable reads
+immediately and every six hours on the baked channel against `RELEASE_REPO` (`korolenkowork/thinkrail`, the
+fork the installers also default to) with the same GitHub rules as the installers: stable reads
 `releases/latest`, while nightly selects the first `vX.Y.Z-nightly.N` tag from `releases?per_page=20`. Only a
 strictly newer version produces `{ currentVersion, availableVersion, channel }` state; discovery failure and
 no-update are silent. A different newer release may replace available or failed state, but successful execution

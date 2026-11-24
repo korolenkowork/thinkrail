@@ -227,13 +227,26 @@ pipeline under their raw framework names; patch generation remains disabled. Lin
 24.04+/glibc 2.38 and the declared GTK, WebKitGTK, AppIndicator, and librsvg dependencies. CEF and
 additional installer formats are outside this contract.
 
+## Fork release
+
+This fork publishes its own nightly builds: `release-fork.yml` runs on every push to `main` (and by hand),
+never in `JetBrains/thinkrail`. It versions `${BASE_VERSION}-nightly.<1000 + run number>` (the offset keeps
+tags clear of upstream's), runs `.github/actions/build-binary` on the `nightly` channel without an analytics
+key for `bun-darwin-arm64`, `bun-linux-x64` and `bun-windows-x64`, then creates prerelease `v<version>`
+with the CLI binaries, desktop installers and `SHA256SUMS`, and replaces the manifests and archives on the
+`desktop-updates` release. The CLI updater (`RELEASE_REPO`), both installers (`THINKRAIL_REPO` default,
+`nightly` default channel) and Electrobun's `release.baseUrl` all point at `korolenkowork/thinkrail`, so
+installs from the fork update only from it. The upstream-only website deploy and pi-package publish jobs are
+guarded to `JetBrains/thinkrail`. Raise `BASE_VERSION` when merging a newer upstream base.
+
 ## Release identity and trust
 
 The release controller supplies an explicit public `source_sha`. The public recipe stamps only
 `packages/shared/src/version.ts` with `{ version, channel, commit, posthogProjectKey }`; CLI, desktop
 configuration, analytics, and `server.welcome.appVersion` consume that same identity. The action's
-required `posthog-project-key` input is the only source of the app's analytics key — the repository
-carries none — and stamping fails closed when it is empty or the channel is not `nightly|stable`. It
+`posthog-project-key` input is the only source of the app's analytics key — the repository carries none.
+Stamping fails closed when the key is neither empty nor a `phc_` key, or the channel is not
+`nightly|stable`; an empty key builds without analytics (the fork release below). It
 is a public ingestion key, not a service credential, so hosted native jobs may receive it; the private
 workflow passes it from its secret store and the stamp step never echoes it. The private workflow's own commit
 is never product identity.

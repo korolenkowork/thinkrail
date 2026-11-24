@@ -2,10 +2,10 @@
 # ThinkRail binary installer — downloads the single-file `thinkrail` executable for your platform from
 # the GitHub releases, verifies its checksum, and puts it on your PATH.
 #
-#   curl -fsSL https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.sh | bash
 #
 # Options (pass after `-s --`):
-#   --channel stable|nightly   (default: stable)
+#   --channel stable|nightly   (default: nightly)
 #   --version X.Y.Z|X.Y.Z-nightly.N|latest
 #                              (default: latest)
 #   --prefix DIR               (default: ~/.local; binary lands at <prefix>/bin/thinkrail)
@@ -16,8 +16,8 @@
 
 set -euo pipefail
 
-REPO="${THINKRAIL_REPO:-JetBrains/thinkrail}"
-CHANNEL="stable"
+REPO="${THINKRAIL_REPO:-korolenkowork/thinkrail}"
+CHANNEL="nightly"
 VERSION="latest"
 if [ -z "${HOME:-}" ]; then
     echo "Error: HOME is not set; pass a shell environment with a home directory." >&2
@@ -31,11 +31,11 @@ usage() {
 ThinkRail binary installer.
 
 Usage:
-  curl -fsSL https://raw.githubusercontent.com/JetBrains/thinkrail/main/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/korolenkowork/thinkrail/main/install.sh | bash
   curl -fsSL ... | bash -s -- --channel nightly --version 0.2.0-nightly.4 --prefix ~/.local
 
 Options:
-  --channel stable|nightly   (default: stable)
+  --channel stable|nightly   (default: nightly)
   --version X.Y.Z|X.Y.Z-nightly.N|latest
                              (default: latest)
   --prefix DIR               (default: ~/.local; binary lands at <prefix>/bin/thinkrail)
